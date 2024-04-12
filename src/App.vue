@@ -1,15 +1,30 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <buscador @conectaAPI = "conectaAPI"></buscador>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
-
+import buscador from "./components/buscador-cmp.vue";
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    buscador
+  },
+  methods: {
+    conectaAPI(message){
+      fetch(`https://pokeapi.co/api/v2/pokemon/${message}`)
+            .then(res => {
+              res.json().then(json => {
+                this.bresult = true
+                this.pokemon = json
+              console.log(this.pokemon)
+            })
+            .catch((err) => {
+                this.bresult = false;
+                this.error="El usuario no existe"
+                console.error(err);
+              });  
+            })
+    }
   }
 }
 </script>
