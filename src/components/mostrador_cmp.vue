@@ -8,7 +8,8 @@
             </div>
             <img :src="srcPokemon" alt="Imagen del Pokemon">
             <p id="parrafo-tipo" class="parrafo-tipo">{{ tipoMayuscula }}</p>
-        </div>
+            <button class="btnFavoritos" @click="toggleFavorito">{{ favoriteButtonText }}</button>
+        </div> 
     </div>
 </template>
 
@@ -21,6 +22,12 @@ export default {
     idPokemon:Number,
     srcPokemon:String,
     tipoPokemon:String,
+    favoriteButtonText:String,
+  },
+  methods: {
+    toggleFavorito(){
+        this.$emit("toggleFavorito")
+    }
   },
 
   computed:{
@@ -64,5 +71,42 @@ img{
     padding-bottom: 40px;
     color: black;
     font-size: 20px;
+}
+.btnFavoritos {
+  min-width: 130px;
+  height: 40px;
+  color: #fff;
+  margin-bottom: 5px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  display: inline-block;
+  outline: none;
+  border: 1px solid #000;
+  border-radius: 2px;
+  color: #000;
+  background: transparent;
+  z-index: 0;
+  
+}
+.btnFavoritos:hover:after {
+  top: 0;
+  left: 0;
+
+
+}
+.btnFavoritos:after {
+  content: "";
+  width: 100%;
+  z-index: -1;
+  position: absolute;
+  height: 100%;
+  top: 5px;
+  left: 5px;
+  transition: 0.2s;
+  background-color: #ffe566;
+  border-radius: 2px;
+
 }
 </style>

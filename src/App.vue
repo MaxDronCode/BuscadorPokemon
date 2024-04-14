@@ -1,12 +1,11 @@
 <template>
-  <buscador_cmp @conectaAPI = "conectaAPI"></buscador_cmp>
-  <mostrador_cmp v-if="bResult" 
-    :nombrePokemon="this.pokemon.name" 
-    :idPokemon="this.pokemon.id" 
-    :srcPokemon="this.pokemon.sprites.front_default" 
-    :tipoPokemon="this.pokemon.types[0].type.name">
+  <buscador_cmp @conectaAPI="conectaAPI"></buscador_cmp>
+  <mostrador_cmp v-if="bResult" :nombrePokemon="this.pokemon.name" :idPokemon="this.pokemon.id"
+    :srcPokemon="this.pokemon.sprites.front_default" :tipoPokemon="this.pokemon.types[0].type.name"
+    :favoriteButtonText="favoriteButtonText"
+    @toggleFavorito="toggleFavorito">
   </mostrador_cmp>
- 
+
 </template>
 
 <script>
@@ -19,45 +18,65 @@ export default {
     buscador_cmp,
     mostrador_cmp,
   },
-  data(){
+  data() {
     return {
       pokemon: {
         name: '',
         id: '',
-        sprites: {front_default: ''},
-        types: [{type: {name: ''}}]
+        sprites: { front_default: '' },
+        types: [{ type: { name: '' } }]
       },
-      bResult:false,
-      error:String,
+      bResult: false,
+      error: String,
+      favoritos: new Map(),
     }
   },
+
+  computed: {
+    favoriteButtonText() {
+      return this.estaEnFavoritos ? 'Eliminar Favorito' : 'Añadir a Favoritos';
+    },
+    favoritesArray() {
+      return Array.from(this.favorites.values());
+    },
+    estaEnFavoritos() {
+      return this.favoritos.has(this.pokemon.id);
+    }
+  },
+
   methods: {
-    conectaAPI(message){
+    conectaAPI(message) {
       fetch(`https://pokeapi.co/api/v2/pokemon/${message}`)
-            .then(res => {
-              res.json().then(json => {
-                this.bResult = true
-                this.pokemon = json
-              console.log(this.pokemon)
-            })
+        .then(res => {
+          res.json().then(json => {
+            this.bResult = true
+            this.pokemon = json
+            console.log(this.pokemon)
+          })
             .catch((err) => {
-                this.bresult = false;
-                this.error="El usuario no existe"
-                console.error(err);
-              });  
-            })
+              this.bresult = false;
+              this.error = "El usuario no existe"
+              console.error(err);
+            });
+        })
+    },
+    toggleFavorito() {      
+      if (this.favoritos.has(this.pokemon.id)) {
+        this.favoritos.delete(this.pokemon.id);
+      } else {
+        this.favoritos.set(this.pokemon.id, this.pokemon);
+      }
     }
   }
 }
 </script>
 
 <style>
-
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  
+
 }
 </style>

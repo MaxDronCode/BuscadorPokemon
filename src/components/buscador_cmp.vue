@@ -35,6 +35,8 @@ form{
   height: 50px;
   border-radius: 8px;
   outline: none;
+  font-size: 30px;
+  text-align: center;
   
 }
 .inputText:focus{
