@@ -1,22 +1,38 @@
 <template>
   <buscador_cmp @conectaAPI="conectaAPI"></buscador_cmp>
-  <mostrador_cmp v-if="bResult" :nombrePokemon="this.pokemon.name" :idPokemon="this.pokemon.id"
-    :srcPokemon="this.pokemon.sprites.front_default" :tipoPokemon="this.pokemon.types[0].type.name"
+
+  <mostrador_cmp v-if="bResult" 
+    :nombrePokemon="this.pokemon.name" 
+    :idPokemon="this.pokemon.id"
+    :srcPokemon="this.pokemon.sprites.front_default" 
+    :tipoPokemon="this.pokemon.types[0].type.name"
     :favoriteButtonText="favoriteButtonText"
     @toggleFavorito="toggleFavorito">
   </mostrador_cmp>
+  <div class="favoritos-cmp-div">
+
+    <favoritos_cmp v-for="favorito in arrayFavoritos" :key="favorito.id"
+    :idPokemon="favorito.id"
+    :nombrePokemon="favorito.name" 
+    :srcPokemon="favorito.sprites.front_default" 
+    >
+    </favoritos_cmp>
+
+  </div>
 
 </template>
 
 <script>
 import buscador_cmp from "./components/buscador_cmp.vue";
 import mostrador_cmp from "./components/mostrador_cmp.vue";
+import favoritos_cmp from "./components/favoritos_cmp.vue";
 
 export default {
   name: 'App',
   components: {
     buscador_cmp,
     mostrador_cmp,
+    favoritos_cmp,
   },
   data() {
     return {
@@ -36,11 +52,14 @@ export default {
     favoriteButtonText() {
       return this.estaEnFavoritos ? 'Eliminar Favorito' : 'Añadir a Favoritos';
     },
-    favoritesArray() {
-      return Array.from(this.favorites.values());
+    arrayFavoritos() {
+      return Array.from(this.favoritos.values());
     },
     estaEnFavoritos() {
       return this.favoritos.has(this.pokemon.id);
+    },
+    existenFavoritos() {
+      return this.favoritos.size > 0;
     }
   },
 
@@ -60,13 +79,32 @@ export default {
             });
         })
     },
+    actualizarLocalStorage(){
+      localStorage.setItem("pokemonApi", JSON.stringify(this.arrayFavoritos))
+    },
+
     toggleFavorito() {      
       if (this.favoritos.has(this.pokemon.id)) {
         this.favoritos.delete(this.pokemon.id);
+        console.log("Favorito eliminado")
+        console.log(this.favoritos)
       } else {
         this.favoritos.set(this.pokemon.id, this.pokemon);
+        console.log("Favorito añadido")
+        console.log(this.favoritos)
+      }
+      this.actualizarLocalStorage();
+    },
+    sacarDelLocalStorage(){
+      const favoritosJSON = localStorage.getItem("pokemonApi")
+      if (favoritosJSON){
+        this.favoritos = new Map(JSON.parse(favoritosJSON).map(pokemon => [pokemon.id, pokemon]))
       }
     }
+    
+  },
+  mounted(){
+    this.sacarDelLocalStorage()
   }
 }
 </script>
@@ -78,5 +116,10 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
 
+}
+.favoritos-cmp-div{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 </style>

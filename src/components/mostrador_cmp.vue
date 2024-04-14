@@ -64,11 +64,11 @@ export default {
 }
 img{
     box-sizing: content-box;
-    width: 250px;
-    height: 250px;
+    width: 180px;
+    height: 180px;
 }
 .parrafo-tipo{
-    padding-bottom: 40px;
+    /* padding-bottom: 40px; */
     color: black;
     font-size: 20px;
 }
